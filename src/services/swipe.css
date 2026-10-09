@@ -1,0 +1,26 @@
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+:root {
+  --swiper-navigation-size: 22px;
+  --swiper-theme-color: #016483;
+}
+
+.swiper-wrapper {
+  align-items: center;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
