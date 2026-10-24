@@ -223,109 +223,15 @@ export function isDailyDateDisabled(
   return false;
 }
 
-function periodicPeriodsAreAdjacent(
-  left: ReservationPeriod,
-  right: ReservationPeriod
-) {
-  const leftEnd = dayjs(left.endPeriod).startOf("day");
-  const rightStart = dayjs(right.startPeriod).startOf("day");
-  return (
-    leftEnd.isValid() &&
-    rightStart.isValid() &&
-    rightStart.diff(leftEnd, "day") === 1
-  );
-}
-
 export function updatePeriodicSelection(
   periods: readonly ReservationPeriod[],
-  selectedIndices: readonly number[],
+  current: readonly number[],
   index: number,
   checked: boolean
 ): number[] {
-  const current = [...new Set(selectedIndices)]
-    .filter(
-      (selectedIndex) =>
-        Number.isInteger(selectedIndex) &&
-        selectedIndex >= 0 &&
-        selectedIndex < periods.length
-    )
-    .sort((a, b) => a - b);
-
-  if (!Number.isInteger(index) || index < 0 || index >= periods.length) {
-    return current;
-  }
-
-  if (!checked) {
-    if (!current.includes(index)) return current;
-    return index === current[0]
-      ? current.filter((selectedIndex) => selectedIndex > index)
-      : current.filter((selectedIndex) => selectedIndex < index);
-  }
-
-  if (
-    periods[index].status !== "AVAILABLE" ||
-    current.includes(index) ||
-    !current.every(
-      (selectedIndex) => periods[selectedIndex].status === "AVAILABLE"
-    )
-  ) {
-    return current;
-  }
-
-  if (!current.length) return [index];
-
-  const first = current[0];
-  const last = current[current.length - 1];
-  if (
-    index === first - 1 &&
-    periodicPeriodsAreAdjacent(periods[index], periods[first])
-  ) {
-    return [index, ...current];
-  }
-  if (
-    index === last + 1 &&
-    periodicPeriodsAreAdjacent(periods[last], periods[index])
-  ) {
-    return [...current, index];
-  }
-  return current;
-}
-
-export function getSelectablePeriodicIndices(
-  periods: readonly ReservationPeriod[],
-  selectedIndices: readonly number[]
-): number[] {
-  const selected = [...new Set(selectedIndices)]
-    .filter(
-      (index) => Number.isInteger(index) && index >= 0 && index < periods.length
-    )
-    .sort((a, b) => a - b);
-  const selectable = new Set(
-    selected.filter((index) => periods[index].status === "AVAILABLE")
-  );
-
-  if (!selected.length) {
-    periods.forEach((period, index) => {
-      if (period.status === "AVAILABLE") selectable.add(index);
-    });
-    return [...selectable];
-  }
-
-  const first = selected[0];
-  const last = selected[selected.length - 1];
-  if (
-    periods[first]?.status === "AVAILABLE" &&
-    periods[first - 1]?.status === "AVAILABLE" &&
-    periodicPeriodsAreAdjacent(periods[first - 1], periods[first])
-  ) {
-    selectable.add(first - 1);
-  }
-  if (
-    periods[last]?.status === "AVAILABLE" &&
-    periods[last + 1]?.status === "AVAILABLE" &&
-    periodicPeriodsAreAdjacent(periods[last], periods[last + 1])
-  ) {
-    selectable.add(last + 1);
-  }
-  return [...selectable].sort((a, b) => a - b);
+  // TODO: this is incomplete. Fix it so the periodic selection flow works.
+  void periods;
+  void index;
+  void checked;
+  return [...current];
 }

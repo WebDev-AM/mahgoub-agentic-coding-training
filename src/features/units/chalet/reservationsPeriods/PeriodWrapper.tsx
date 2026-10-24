@@ -3,10 +3,7 @@ import { t } from "i18next";
 import FromToIcon from "../../../../assets/icons/FromToIcon";
 import { ReservationPeriod } from "../../../../types/reservation/ReservationsSchema";
 import { motion } from "framer-motion";
-import {
-  getSelectablePeriodicIndices,
-  updatePeriodicSelection,
-} from "../../../../utils/reservationPeriodsUtils";
+import { updatePeriodicSelection } from "../../../../utils/reservationPeriodsUtils";
 
 type PeriodWrapperProps = {
   id: number;
@@ -24,8 +21,6 @@ const PeriodWrapper: React.FC<PeriodWrapperProps> = ({
   selected,
 }) => {
   const isSelected = selected.includes(id);
-  const canSelect =
-    isSelected || getSelectablePeriodicIndices(periods, selected).includes(id);
 
   const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelected((previous) =>
@@ -44,7 +39,7 @@ const PeriodWrapper: React.FC<PeriodWrapperProps> = ({
       <div
         className={`font-poppins relative mb-3 flex h-4 items-center gap-2 text-sm font-bold tracking-wide ${isSelected && "text-primary"}`}
       >
-        {packageData.status === "AVAILABLE" && canSelect && (
+        {packageData.status === "AVAILABLE" && (
           <>
             <input
               type="checkbox"
