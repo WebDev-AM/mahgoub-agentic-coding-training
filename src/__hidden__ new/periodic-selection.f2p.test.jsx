@@ -32,11 +32,14 @@ const periods = [
 function SelectionHarness({ initialSelected = [] }) {
   const [selected, setSelected] = useState(initialSelected);
   return (
-    <PeriodsSlider
-      periods={periods}
-      selected={selected}
-      setSelected={setSelected}
-    />
+    <>
+      <output>Selected: {selected.join(",")}</output>
+      <PeriodsSlider
+        periods={periods}
+        selected={selected}
+        setSelected={setSelected}
+      />
+    </>
   );
 }
 
@@ -98,6 +101,11 @@ describe("Periodic selection behavior", () => {
 
     expect(checkboxes[0]).toBeChecked();
     expect(checkboxes[1]).not.toBeChecked();
-    expect(checkboxes[2]).not.toBeChecked();
+    expect(screen.getByText("Selected: 0")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("checkbox", {
+        name: "Select Weekend 2026-06-03",
+      })
+    ).not.toBeInTheDocument();
   });
 });
