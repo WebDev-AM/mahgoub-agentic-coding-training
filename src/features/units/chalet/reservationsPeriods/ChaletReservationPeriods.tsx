@@ -23,6 +23,12 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
   const { setCartItem } = useChaletCartContext();
 
   const { periods, isLoading } = useChaletReservationPeriods(chalet.uuid);
+  const rawPeriods = periods ?? [];
+  const hasDaily = rawPeriods.some((period) => period.typePeriod === "Daily");
+  const hasPeriodic = rawPeriods.some(
+    (period) => period.typePeriod !== "Daily"
+  );
+  const showSwitcher = hasDaily && hasPeriodic;
 
   const [renderSection, setRenderSection] = useState<ReservationView>(
     chalet.reservationType
@@ -30,11 +36,16 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
 
   const [selected, setSelected] = useState<number[]>([]);
   const normalizedPeriods = useMemo(
-    () => splitReservationPeriods(periods ?? []),
+    () => splitReservationPeriods(rawPeriods),
     [periods]
   );
+  const activeSection: ReservationView = hasDaily
+    ? hasPeriodic
+      ? renderSection
+      : "DAILY"
+    : "PERIODIC";
   const currentPeriods =
-    renderSection === "DAILY"
+    activeSection === "DAILY"
       ? normalizedPeriods.dailyPeriods
       : normalizedPeriods.periodicPeriods;
 
@@ -42,7 +53,7 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
     return <PageSpinner />;
   }
 
-  if (!periods) {
+  if (!periods || (!hasDaily && !hasPeriodic)) {
     return null;
   }
 
@@ -58,7 +69,7 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
       currentPeriods,
       selected[0],
       selected[selected.length - 1],
-      renderSection === "PERIODIC" ? selected : undefined
+      activeSection === "PERIODIC" ? selected : undefined
     );
 
     setCartItem({
@@ -71,22 +82,24 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
 
   return (
     <div className="flex flex-col items-center gap-5">
-      <SectionsSwitcher
-        renderSection={renderSection}
-        setRenderSection={handleSectionChange}
-        sections={[
-          {
-            labelKey: "Periodic",
-            value: "PERIODIC",
-          },
-          {
-            labelKey: "Daily",
-            value: "DAILY",
-          },
-        ]}
-      />
+      {showSwitcher && (
+        <SectionsSwitcher
+          renderSection={renderSection}
+          setRenderSection={handleSectionChange}
+          sections={[
+            {
+              labelKey: "Periodic",
+              value: "PERIODIC",
+            },
+            {
+              labelKey: "Daily",
+              value: "DAILY",
+            },
+          ]}
+        />
+      )}
 
-      {renderSection === "PERIODIC" && (
+      {activeSection === "PERIODIC" && (
         <PeriodsSlider
           periods={normalizedPeriods.periodicPeriods}
           selected={selected}
@@ -94,22 +107,24 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
         />
       )}
 
-      {renderSection === "DAILY" && (
+      {activeSection === "DAILY" && (
         <DateRangePicker
           periods={normalizedPeriods.dailyPeriods}
           setSelected={setSelected}
         />
       )}
 
-      <Button
-        className="brand-button w-70"
-        variant="contained"
-        disabled={selected.length === 0}
-        onClick={handleClick}
-        sx={{ textTransform: "none" }}
-      >
-        {t("Reserve Now")}
-      </Button>
+      {(hasDaily || hasPeriodic) && (
+        <Button
+          className="brand-button w-70"
+          variant="contained"
+          disabled={selected.length === 0}
+          onClick={handleClick}
+          sx={{ textTransform: "none" }}
+        >
+          {t("Reserve Now")}
+        </Button>
+      )}
     </div>
   );
 }
