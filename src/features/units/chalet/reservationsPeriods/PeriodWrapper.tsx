@@ -3,10 +3,15 @@ import { t } from "i18next";
 import FromToIcon from "../../../../assets/icons/FromToIcon";
 import { ReservationPeriod } from "../../../../types/reservation/ReservationsSchema";
 import { motion } from "framer-motion";
+import {
+  getSelectablePeriodicIndices,
+  updatePeriodicSelection,
+} from "../../../../utils/reservationPeriodsUtils";
 
 type PeriodWrapperProps = {
   id: number;
   packageData: ReservationPeriod;
+  periods: ReservationPeriod[];
   setSelected: Dispatch<SetStateAction<number[]>>;
   selected: number[];
 };
@@ -14,61 +19,54 @@ type PeriodWrapperProps = {
 const PeriodWrapper: React.FC<PeriodWrapperProps> = ({
   id,
   packageData,
+  periods,
   setSelected,
   selected,
 }) => {
+  const isSelected = selected.includes(id);
+  const canSelect =
+    isSelected || getSelectablePeriodicIndices(periods, selected).includes(id);
+
   const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setSelected((prev) =>
-        prev.length === 0
-          ? [id]
-          : prev[0] === id + 1
-            ? [id, ...prev]
-            : prev[prev.length - 1] === id - 1
-              ? [...prev, id]
-              : []
-      );
-    } else {
-      setSelected((prev) => prev.filter((v) => v < id));
-    }
+    setSelected((previous) =>
+      updatePeriodicSelection(periods, previous, id, e.target.checked)
+    );
   };
 
   return (
     <motion.div
-      className={`w-full rounded-lg px-4 py-6 shadow ${selected.includes(id) && "border-primary border-2"} bg-white`}
+      className={`w-full rounded-lg px-4 py-6 shadow ${isSelected && "border-primary border-2"} bg-white`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.4 }}
     >
       <div
-        className={`font-poppins relative mb-3 flex h-4 items-center gap-2 text-sm font-bold tracking-wide ${selected.includes(id) && "text-primary"}`}
+        className={`font-poppins relative mb-3 flex h-4 items-center gap-2 text-sm font-bold tracking-wide ${isSelected && "text-primary"}`}
       >
-        {packageData.status === "AVAILABLE" &&
-          (selected.length === 0 ||
-            selected[0] === id + 1 ||
-            selected[selected.length - 1] === id - 1 ||
-            selected.includes(id)) && (
-            <>
-              <input
-                type="checkbox"
-                id={String(id)}
-                onChange={handleCheck}
-                className="hidden"
-              />
-              <label
-                htmlFor={String(id)}
-                className="z-9999 flex h-3.5 w-3.5 cursor-pointer items-center justify-center rounded-full border-2 border-blue-500 transition-all duration-300 hover:bg-blue-100"
-              >
-                {selected.includes(id) && (
-                  <span className="block h-1.5 w-1.5 rounded-full bg-blue-500" />
-                )}
-              </label>
-            </>
-          )}
+        {packageData.status === "AVAILABLE" && canSelect && (
+          <>
+            <input
+              type="checkbox"
+              id={String(id)}
+              checked={isSelected}
+              onChange={handleCheck}
+              aria-label={`${t("Select")} ${t(packageData.typePeriod)} ${packageData.startPeriod}`}
+              className="sr-only"
+            />
+            <label
+              htmlFor={String(id)}
+              className="z-9999 flex h-3.5 w-3.5 cursor-pointer items-center justify-center rounded-full border-2 border-blue-500 transition-all duration-300 focus-within:ring-2 focus-within:ring-blue-500 hover:bg-blue-100"
+            >
+              {isSelected && (
+                <span className="block h-1.5 w-1.5 rounded-full bg-blue-500" />
+              )}
+            </label>
+          </>
+        )}
         <div className="absolute top-0 left-0 flex h-full w-full items-center justify-between ps-5">
           <span
-            className={`font-bold ${selected.includes(id) ? "text-primary" : "text-black"}`}
+            className={`font-bold ${isSelected ? "text-primary" : "text-black"}`}
           >
             {t(packageData.typePeriod)}
           </span>

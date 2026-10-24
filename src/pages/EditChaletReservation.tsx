@@ -1,10 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useChaletPeriodsForUpdate } from "../features/booking/chalet/useChaletPeriodsForUpdate";
 import BackArrow from "../ui/BackArrow";
 import { useChaletReservation } from "../features/reservation/chalet/useChaletReservation";
 import PageSpinner from "../ui/PageSpinner";
 import { getBookingDetails } from "../utils/bookingUtils";
-import { ReservationPeriod } from "../types/reservation/ReservationsSchema";
 import { motion } from "framer-motion";
 import { t } from "i18next";
 import { Button, Divider } from "@mui/material";
@@ -15,6 +14,7 @@ import ReservationAction from "../features/reservation/ReservationAction";
 import { useNavigate } from "react-router-dom";
 import PeriodsSlider from "../features/units/chalet/reservationsPeriods/PeriodsSlider";
 import DateRangePicker from "../features/units/chalet/reservationsPeriods/DateRangePicker";
+import { splitReservationPeriods } from "../utils/reservationPeriodsUtils";
 
 function EditChaletReservation() {
   const [selected, setSelected] = useState<number[]>([]);
@@ -31,14 +31,27 @@ function EditChaletReservation() {
     reservation?.uuid
   );
 
+  const reservationType = reservation?.unit?.reservationType;
+  const normalizedPeriods = useMemo(() => {
+    const split = splitReservationPeriods(periods ?? []);
+    return reservationType === "DAILY"
+      ? split.dailyPeriods
+      : split.periodicPeriods;
+  }, [periods, reservationType]);
+
+  useEffect(() => {
+    setSelected([]);
+  }, [periods, reservationType]);
+
   const newReservation = useMemo(() => {
     if (!periods || !selected.length) return;
     return getBookingDetails(
-      periods as ReservationPeriod[],
+      normalizedPeriods,
       selected[0],
-      selected[selected.length - 1]
+      selected[selected.length - 1],
+      reservationType === "PERIODIC" ? selected : undefined
     );
-  }, [periods, selected]);
+  }, [periods, normalizedPeriods, selected, reservationType]);
 
   if (error || (!isLoading && !reservation)) {
     return <p className="py-10 text-center">{t("Reservation not found")}</p>;
@@ -79,13 +92,16 @@ function EditChaletReservation() {
         <h3 className="h3">{t("Select New Date")}</h3>
         {reservation?.unit?.reservationType === "PERIODIC" && (
           <PeriodsSlider
-            periods={periods}
+            periods={normalizedPeriods}
             selected={selected}
             setSelected={setSelected}
           />
         )}
         {reservation?.unit?.reservationType === "DAILY" && (
-          <DateRangePicker setSelected={setSelected} periods={periods} />
+          <DateRangePicker
+            setSelected={setSelected}
+            periods={normalizedPeriods}
+          />
         )}
       </div>
       <div className="flex flex-col items-center justify-center gap-5 md:flex-row md:items-stretch">

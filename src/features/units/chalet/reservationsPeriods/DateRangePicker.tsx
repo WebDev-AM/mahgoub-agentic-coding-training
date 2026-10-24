@@ -1,4 +1,12 @@
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Flatpickr, { DateTimePickerHandle } from "react-flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import dayjs from "dayjs";
@@ -7,6 +15,9 @@ import { Arabic } from "flatpickr/dist/l10n/ar";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 import { Button } from "@mui/material";
+import { isDailyDateDisabled } from "../../../../utils/reservationPeriodsUtils";
+
+const MemoizedFlatpickr = memo(Flatpickr);
 
 type Props = {
   periods: ReservationPeriod[];
@@ -16,90 +27,112 @@ type Props = {
 export default function DateRangePicker({ periods, setSelected }: Props) {
   const { i18n } = useTranslation();
   const fpRef = useRef<DateTimePickerHandle>(null);
+  const startDateRef = useRef<Date | undefined>(undefined);
   const [value, setValue] = useState<Date[]>([]);
-  // const [searchParams] = useSearchParams();
 
-  const minAvailableDate = dayjs(periods[0].startPeriod).toDate();
-  const maxAvailableDate = dayjs(
-    periods[periods.length - 1].startPeriod
-  ).toDate();
+  const periodDates = periods.flatMap((period) => {
+    const start = dayjs(period.startPeriod);
+    const end = dayjs(period.endPeriod);
+    return start.isValid() && end.isValid() && !end.isBefore(start, "day")
+      ? [start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD")]
+      : [];
+  });
+  const minAvailableDate = periodDates.length
+    ? periodDates.reduce((min, date) => (date < min ? date : min))
+    : undefined;
+  const maxAvailableDate = periodDates.length
+    ? periodDates.reduce((max, date) => (date > max ? date : max))
+    : undefined;
 
-  // ✅ Initialize from search params
-  // useEffect(() => {
-  //   if (!periods.length) return;
+  const disableDate = useCallback(
+    (date: Date) =>
+      isDailyDateDisabled(
+        date,
+        periods,
+        startDateRef.current ? [startDateRef.current] : []
+      ),
+    [periods]
+  );
+  const options = useMemo(
+    () => ({
+      mode: "range" as const,
+      dateFormat: "Y-m-d",
+      ...(i18n.language === "ar" ? { locale: Arabic } : {}),
+      minDate: minAvailableDate,
+      maxDate: maxAvailableDate,
+      disable: [disableDate],
+      showMonths: 1,
+      disableMobile: true,
+      inline: true,
+    }),
+    [disableDate, i18n.language, maxAvailableDate, minAvailableDate]
+  );
 
-  //   const checkIn = searchParams.get("checkIn");
-  //   const checkOut = searchParams.get("checkOut");
+  const handleChange = useCallback(
+    (selectedDates: Date[]) => {
+      if (selectedDates.length === 1) {
+        startDateRef.current = selectedDates[0];
+        setValue([]);
+        setSelected([]);
+        return;
+      }
+      if (selectedDates.length !== 2) {
+        setValue([]);
+        setSelected([]);
+        startDateRef.current = undefined;
+        return;
+      }
 
-  //   if (!checkIn || !checkOut) return;
+      const [start, end] = selectedDates.map((d) => dayjs(d).startOf("day"));
 
-  //   const start = dayjs(checkIn).startOf("day");
-  //   const end = dayjs(checkOut).startOf("day");
+      if (
+        end.isSame(start, "day") ||
+        isDailyDateDisabled(start.toDate(), periods, []) ||
+        isDailyDateDisabled(end.toDate(), periods, [start.toDate()])
+      ) {
+        setValue([]);
+        setSelected([]);
+        startDateRef.current = undefined;
+        fpRef.current?.flatpickr?.clear(false);
+        return;
+      }
 
-  //   if (!start.isValid() || !end.isValid()) return;
-  //   if (end.isSame(start, "day")) return;
+      const startIndex = periods.findIndex((p) =>
+        dayjs(p.startPeriod).isSame(start, "day")
+      );
 
-  //   const startIndex = periods.findIndex((p) =>
-  //     dayjs(p.startPeriod).isSame(start, "day")
-  //   );
+      const endIndex = periods.findIndex((p) =>
+        dayjs(p.startPeriod).isSame(end, "day")
+      );
+      if (startIndex === -1 || endIndex === -1) {
+        setValue([]);
+        setSelected([]);
+        startDateRef.current = undefined;
+        fpRef.current?.flatpickr?.clear(false);
+        return;
+      }
 
-  //   const endIndex = periods.findIndex((p) =>
-  //     dayjs(p.startPeriod).isSame(end, "day")
-  //   );
-
-  //   if (startIndex === -1 || endIndex === -1) return;
-
-  //   // Set UI value
-  //   setValue([start.toDate(), end.toDate()]);
-
-  //   // Set selected indices
-  //   setSelected([startIndex, endIndex]);
-  // }, [searchParams, periods, setSelected]);
-
-  const handleChange = (selectedDates: Date[]) => {
-    if (selectedDates.length !== 2) return;
-
-    const [start, end] = selectedDates.map((d) => dayjs(d).startOf("day"));
-
-    if (end.isSame(start, "day")) return;
-
-    setValue(selectedDates);
-
-    const startIndex = periods.findIndex((p) =>
-      dayjs(p.startPeriod).isSame(start, "day")
-    );
-
-    const endIndex = periods.findIndex((p) =>
-      dayjs(p.startPeriod).isSame(end, "day")
-    );
-
-    if (startIndex === -1 || endIndex === -1) return;
-
-    setSelected([startIndex, endIndex]);
-  };
+      setValue(selectedDates);
+      startDateRef.current = undefined;
+      setSelected([startIndex, endIndex]);
+    },
+    [periods, setSelected]
+  );
 
   const handleClearDates = () => {
     setValue([]);
+    startDateRef.current = undefined;
     setSelected([]);
+    fpRef.current?.flatpickr?.clear(false);
   };
 
   return (
     <div className="flex flex-col items-center gap-2">
       <h2 className="h2 text-brand-text">{t("Chalet Reservation Days")}</h2>
 
-      <Flatpickr
+      <MemoizedFlatpickr
         ref={fpRef}
-        value={value}
-        options={{
-          mode: "range",
-          dateFormat: "Y-m-d",
-          locale: i18n.language === "ar" ? Arabic : undefined,
-          minDate: minAvailableDate,
-          maxDate: maxAvailableDate,
-          showMonths: 1,
-          disableMobile: true,
-          inline: true,
-        }}
+        options={options}
         onChange={handleChange}
         className="h-0 overflow-hidden"
       />

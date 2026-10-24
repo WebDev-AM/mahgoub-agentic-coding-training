@@ -47,10 +47,10 @@ function PeriodsSlider({ selected, setSelected, periods }: PeriodsSliderProps) {
 
   // Apply filters
   const filteredPeriods = useMemo(() => {
-    return periods.filter((period) => {
+    return periods.flatMap((period, index) => {
       // Type filter
       if (typeFilter !== "all" && period.typePeriod !== typeFilter) {
-        return false;
+        return [];
       }
 
       // Month filter
@@ -59,13 +59,12 @@ function PeriodsSlider({ selected, setSelected, periods }: PeriodsSliderProps) {
           .locale(i18n.language)
           .format("MMM YYYY");
 
-        if (month !== monthFilter) return false;
+        if (month !== monthFilter) return [];
       }
 
-      return true;
+      return [{ period, index }];
     });
   }, [periods, typeFilter, monthFilter, i18n.language]);
-
   return (
     <div className="flex w-full flex-col gap-4 p-2">
       <h2 className="h2 text-brand-text">{t("Chalet Reservation Periods")}</h2>
@@ -124,16 +123,13 @@ function PeriodsSlider({ selected, setSelected, periods }: PeriodsSliderProps) {
         {filteredPeriods.length === 0 ? (
           <p className="text-gray-500">{t("No periods available")}</p>
         ) : (
-          filteredPeriods.map((period) => {
-            const periodIndex = periods.findIndex(
-              (p) => p.startPeriod === period.startPeriod
-            );
-
+          filteredPeriods.map(({ period, index }) => {
             return (
               <PeriodWrapper
-                key={periodIndex}
-                id={periodIndex}
+                key={`${period.startPeriod}-${index}`}
+                id={index}
                 packageData={period}
+                periods={periods}
                 selected={selected}
                 setSelected={setSelected}
               />

@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +14,7 @@ import PeriodsSlider from "./PeriodsSlider";
 import PageSpinner from "../../../../ui/PageSpinner";
 import DateRangePicker from "./DateRangePicker";
 import SectionsSwitcher from "../../../../ui/SectionsSwitcher";
+import { splitReservationPeriods } from "../../../../utils/reservationPeriodsUtils";
 
 type ReservationView = "PERIODIC" | "DAILY";
 
@@ -23,10 +24,19 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
 
   const { periods, isLoading } = useChaletReservationPeriods(chalet.uuid);
 
-  const [renderSection, setRenderSection] =
-    useState<ReservationView>("PERIODIC");
+  const [renderSection, setRenderSection] = useState<ReservationView>(
+    chalet.reservationType
+  );
 
   const [selected, setSelected] = useState<number[]>([]);
+  const normalizedPeriods = useMemo(
+    () => splitReservationPeriods(periods ?? []),
+    [periods]
+  );
+  const currentPeriods =
+    renderSection === "DAILY"
+      ? normalizedPeriods.dailyPeriods
+      : normalizedPeriods.periodicPeriods;
 
   if (isLoading) {
     return <PageSpinner />;
@@ -45,9 +55,10 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
     if (!selected.length) return;
 
     const reservationData = getBookingDetails(
-      periods!,
+      currentPeriods,
       selected[0],
-      selected[selected.length - 1]
+      selected[selected.length - 1],
+      renderSection === "PERIODIC" ? selected : undefined
     );
 
     setCartItem({
@@ -77,14 +88,17 @@ function ChaletReservationPeriods({ chalet }: { chalet: Chalet }) {
 
       {renderSection === "PERIODIC" && (
         <PeriodsSlider
-          periods={periods}
+          periods={normalizedPeriods.periodicPeriods}
           selected={selected}
           setSelected={setSelected}
         />
       )}
 
       {renderSection === "DAILY" && (
-        <DateRangePicker periods={periods} setSelected={setSelected} />
+        <DateRangePicker
+          periods={normalizedPeriods.dailyPeriods}
+          setSelected={setSelected}
+        />
       )}
 
       <Button
