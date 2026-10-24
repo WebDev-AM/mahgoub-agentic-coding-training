@@ -1,9 +1,9 @@
 import { t } from "i18next";
 import { motion } from "framer-motion";
 
-import feature1 from "../../assets/images/feature1.png";
-import feature2 from "../../assets/images/feature2.png";
-import feature3 from "../../assets/images/feature3.png";
+import feature1 from "../../assets/images/placeholder.svg";
+import feature2 from "../../assets/images/placeholder.svg";
+import feature3 from "../../assets/images/placeholder.svg";
 import { CiCircleChevRight, CiCircleChevLeft } from "react-icons/ci";
 
 import { useNavigate } from "react-router-dom";

@@ -2,12 +2,6 @@ import { useTranslation } from "react-i18next";
 import { ChaletReservation } from "../../types/reservation/ChaletReservationSchema";
 import { useNavigate } from "react-router-dom";
 import { t } from "i18next";
-import { Button } from "@mui/material";
-import { FaShare } from "react-icons/fa";
-import useSendMessage from "../chat/useSendMessage";
-import { usePushToPortal } from "../../hooks/usePushToPortal";
-import { toast } from "react-toastify";
-import { useMe } from "../authentication/useMe";
 
 function ChaletReservationCard({
   reservation,
@@ -16,35 +10,6 @@ function ChaletReservationCard({
 }) {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-
-  const { user } = useMe();
-  const { sendMessage, isPending } = useSendMessage();
-  const { pushNotificationToPortal } = usePushToPortal();
-
-  const handleShareWithCustomerService = () => {
-    sendMessage(
-      {
-        text: `Reservation #${reservation.uuid} details shared.`,
-        id: user!.id,
-        type: "reservation",
-        attachment: reservation.uuid,
-      },
-      {
-        onSuccess: () => {
-          toast.success(
-            t(
-              "Reservation details shared with customer service. Check your chat!"
-            )
-          );
-          pushNotificationToPortal({
-            title: `${user?.firstName} ${user?.lastName}`,
-            message: `Message: Reservation ${reservation.uuid} details shared.`,
-            type: "CHAT",
-          });
-        },
-      }
-    );
-  };
 
   if (!reservation.unit) return null;
 
@@ -105,20 +70,6 @@ function ChaletReservationCard({
           <p className="text-primary text-xl font-semibold">
             {`${reservation.invoice?.totalAmount} ${t("KWD")}`}
           </p>
-        </div>
-        <div className="flex items-center justify-end">
-          <Button
-            variant="contained"
-            className="primary-button propagation-none flex items-center gap-1"
-            sx={{ textTransform: "none" }}
-            disabled={isPending}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleShareWithCustomerService();
-            }}
-          >
-            <FaShare size={16} /> {t("Share")}
-          </Button>
         </div>
       </div>
     </div>

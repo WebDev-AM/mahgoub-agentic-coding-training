@@ -1,6 +1,6 @@
 import { t } from "i18next";
-import comingSoonBg from "../assets/images/comingSoonBg.jpg";
-import comingSoonLogo from "../assets/images/comingSoonLogo.png";
+import comingSoonBg from "../assets/images/placeholder.svg";
+import comingSoonLogo from "../assets/images/placeholder.svg";
 import { Link } from "react-router-dom";
 
 function ComingSoon() {

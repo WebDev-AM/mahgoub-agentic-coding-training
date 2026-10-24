@@ -1,10 +1,5 @@
 import dayjs, { Dayjs } from "dayjs";
-import { Timestamp } from "firebase/firestore";
 import i18n from "../i18n";
-
-export function formatTimestamp(timestamp: Timestamp) {
-  return dayjs(timestamp.toDate()).format("YYYY-MM-DD HH:mm:ss");
-}
 
 export function formatDate(date: string | Date | Dayjs | null) {
   return dayjs(date).format("YYYY-MM-DD HH:mm:ss");

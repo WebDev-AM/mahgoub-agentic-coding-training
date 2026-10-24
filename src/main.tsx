@@ -10,11 +10,7 @@ import { ToastContainer } from "react-toastify";
 import { StyledEngineProvider } from "@mui/material";
 
 import App from "./App.tsx";
-import { initFirebaseMessaging } from "./firebase.ts";
-import NotificationPrompt from "./ui/NotificationPrompt.tsx";
 import WhatsAppWidget from "./ui/WhatsAppWidget.tsx";
-
-initFirebaseMessaging();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -24,7 +20,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       </GoogleOAuthProvider>
     </StyledEngineProvider>
     <ToastContainer position="top-center" />
-    <NotificationPrompt />
     <WhatsAppWidget />
   </React.StrictMode>
 );

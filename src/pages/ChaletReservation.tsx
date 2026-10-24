@@ -1,4 +1,4 @@
-import orderSuccessPayment from "../assets/images/orderSuccessPayment.png";
+import orderSuccessPayment from "../assets/images/placeholder.svg";
 import { t } from "i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useChaletReservation } from "../features/reservation/chalet/useChaletReservation";

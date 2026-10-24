@@ -11,8 +11,8 @@ import {
   ChaletReservation,
   ReservationUser,
 } from "../../../types/reservation/ChaletReservationSchema";
-import paidImage from "../../../assets/images/paid.png";
-import partialPaymentImage from "../../../assets/images/partialPayment.png";
+import paidImage from "../../../assets/images/placeholder.svg";
+import partialPaymentImage from "../../../assets/images/placeholder.svg";
 import dayjs, { Dayjs } from "dayjs";
 import { Chalet } from "../../../types/ChaletSchema";
 

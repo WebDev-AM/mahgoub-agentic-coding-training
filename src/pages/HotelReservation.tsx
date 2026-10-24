@@ -1,4 +1,4 @@
-import orderSuccessPayment from "../assets/images/orderSuccessPayment.png";
+import orderSuccessPayment from "../assets/images/placeholder.svg";
 import { t } from "i18next";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@mui/material";

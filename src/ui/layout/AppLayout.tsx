@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import ContactUs from "./ContactUs";
-import FloatingChatIcon from "../FloatingChatIcon";
 import PersistCode from "./PersistCode";
 import PageSpinner from "../PageSpinner";
 
@@ -15,7 +14,6 @@ function AppLayout() {
           <Outlet />
         </Suspense>
       </div>
-      <FloatingChatIcon />
       <ContactUs />
 
       <PersistCode />

@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import orderSuccessPayment from "../../../assets/images/orderSuccessPayment.png";
+import orderSuccessPayment from "../../../assets/images/placeholder.svg";
 import { Link, Navigate } from "react-router-dom";
 import OrderCard from "../orderHistory/OrderCard";
 import { useOrderDetails } from "./useOrderDetails";

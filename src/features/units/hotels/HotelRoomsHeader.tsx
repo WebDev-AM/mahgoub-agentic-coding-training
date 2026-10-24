@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
-import chaletsHeader1 from "../../../assets/images/chaletsHeader1.png";
-import chaletsHeader2 from "../../../assets/images/chaletsHeader2.png";
+import chaletsHeader1 from "../../../assets/images/placeholder.svg";
+import chaletsHeader2 from "../../../assets/images/placeholder.svg";
 import { FilterDispatchAction } from "../../../types/FilterTypes";
 import { Dispatch, useEffect } from "react";
 import SearchHotelRooms from "./SearchHotelRooms";

@@ -1,5 +1,5 @@
-import mobile from "../../assets/images/mobile.png";
-import email from "../../assets/images/email.svg";
+import mobile from "../../assets/images/placeholder.svg";
+import email from "../../assets/images/placeholder.svg";
 import { useForm } from "react-hook-form";
 import { TextField } from "@mui/material";
 import { t } from "i18next";

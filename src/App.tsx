@@ -9,7 +9,6 @@ import {
   Chalet,
   ChaletBooking,
   ChaletReservation,
-  Chat,
   ComingSoon,
   EditChaletReservation,
   FailedReservation,
@@ -124,7 +123,6 @@ function App() {
                     path="booking/hotel/:step"
                     element={<HotelBooking />}
                   />
-                  <Route path="customer-service" element={<Chat />} />
                   <Route path="coming-soon" element={<ComingSoon />} />
                 </Route>
                 <Route path="*" element={<PageNotFound />} />

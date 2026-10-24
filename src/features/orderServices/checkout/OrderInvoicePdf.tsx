@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import dayjs from "dayjs";
-import paidImage from "../../../assets/images/paid.png";
+import paidImage from "../../../assets/images/placeholder.svg";
 import { OrderDetails } from "../../../types/OrderSchema";
 
 /* -------------------- CONSTANTS -------------------- */

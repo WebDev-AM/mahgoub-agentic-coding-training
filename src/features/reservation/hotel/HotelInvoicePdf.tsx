@@ -7,9 +7,9 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import dayjs from "dayjs";
-import paidImage from "../../../assets/images/paid.png";
-import partialPaymentImage from "../../../assets/images/partialPayment.png";
-import freeCancellationImage from "../../../assets/images/freeCancellation.jpg";
+import paidImage from "../../../assets/images/placeholder.svg";
+import partialPaymentImage from "../../../assets/images/placeholder.svg";
+import freeCancellationImage from "../../../assets/images/placeholder.svg";
 import { Hotel } from "../../../types/HotelSchema";
 import {
   HotelInvoice,

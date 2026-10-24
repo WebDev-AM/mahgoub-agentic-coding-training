@@ -1,7 +1,7 @@
 import { t } from "i18next";
-import discoverLandscape from "../../assets/images/discoverLandscape.png";
-import discover1 from "../../assets/images/discover1.png";
-import discover2 from "../../assets/images/discover2.png";
+import discoverLandscape from "../../assets/images/placeholder.svg";
+import discover1 from "../../assets/images/placeholder.svg";
+import discover2 from "../../assets/images/placeholder.svg";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 

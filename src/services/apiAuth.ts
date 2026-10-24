@@ -1,4 +1,3 @@
-import { getFcmToken } from "../firebase";
 import {
   LoginType,
   RegisterUserType,
@@ -61,14 +60,11 @@ export async function requestPasswordResetApi(
 }
 
 export async function login(loginData: LoginType) {
-  const fcmToken = await getFcmToken();
-
   const {
     data: { accessToken, refreshToken, sessionId },
   } = await authFetch.post(`${API_END_POINT_URL}/login`, {
     identifier: loginData?.email || loginData?.phoneNumber,
     password: loginData.password,
-    deviceToken: fcmToken,
     platform: "web",
     isClient: true,
     deviceName: navigator.userAgent,
@@ -176,10 +172,8 @@ export async function refresh() {
 
 export async function logout() {
   const refreshToken = localStorage.getItem("refreshToken");
-  const fcmToken = await getFcmToken();
 
   await customFetch.post(`${API_END_POINT_URL}/logout`, {
-    deviceToken: fcmToken,
     refreshToken,
   });
 

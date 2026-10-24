@@ -1,6 +1,6 @@
 import { FiPhoneCall } from "react-icons/fi";
 import { FaCheckCircle, FaTruck, FaShieldAlt } from "react-icons/fa";
-import serviceTypeAboutUs from "../../assets/images/serviceTypeAboutUs.png";
+import serviceTypeAboutUs from "../../assets/images/placeholder.svg";
 import { t } from "i18next";
 
 function ServiceTypeAboutUs() {

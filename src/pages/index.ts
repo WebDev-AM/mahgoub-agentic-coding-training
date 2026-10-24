@@ -2,7 +2,6 @@ import { lazy } from "react";
 
 export { default as PageNotFound } from "./PageNotFound";
 export { default as Home } from "./Home";
-export { default as Chat } from "./Chat";
 
 export const Chalet = lazy(() => import("./Chalet"));
 export const Hotel = lazy(() => import("./Hotel"));

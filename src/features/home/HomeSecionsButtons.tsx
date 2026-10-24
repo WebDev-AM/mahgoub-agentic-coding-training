@@ -1,6 +1,6 @@
 import { t } from "i18next";
 import { useNavigate } from "react-router-dom";
-import PlayIcon from "../../assets/images/play.png";
+import PlayIcon from "../../assets/images/placeholder.svg";
 import FoodIcon from "../../assets/icons/FoodIcon";
 
 function HomeSecionsButtons() {

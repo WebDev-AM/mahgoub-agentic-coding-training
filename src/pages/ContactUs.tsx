@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import contactUs from "../assets/images/contactus.png";
+import contactUs from "../assets/images/placeholder.svg";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaPhoneAlt } from "react-icons/fa";
 import { TbMailFilled } from "react-icons/tb";

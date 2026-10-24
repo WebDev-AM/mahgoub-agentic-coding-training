@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import landing from "../../assets/images/landing.png";
+import landing from "../../assets/images/placeholder.svg";
 import { motion } from "framer-motion";
 import HomeSecionsButtons from "./HomeSecionsButtons";
 

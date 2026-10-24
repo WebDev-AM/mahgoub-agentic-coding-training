@@ -9,10 +9,6 @@ import { statusMap } from "../../../utils/statusUtils";
 import { IoCalendarOutline } from "react-icons/io5";
 import { fromUTCToLocal } from "../../../utils/dateUtils";
 import OngoingOrderStatusStepper from "./OngoingOrderStatusStepper";
-import useSendMessage from "../../chat/useSendMessage";
-import { useMe } from "../../authentication/useMe";
-import { toast } from "react-toastify";
-import { usePushToPortal } from "../../../hooks/usePushToPortal";
 
 interface OrderCardProps {
   order: OrderDetails;
@@ -26,10 +22,7 @@ export default function OrderCard({
   header = true,
 }: OrderCardProps) {
   const { i18n } = useTranslation();
-  const { user } = useMe();
   const { addItemsToCart, isAdding } = useAddItemsToCart();
-  const { sendMessage, isPending } = useSendMessage();
-  const { pushNotificationToPortal } = usePushToPortal();
 
   const handleBuyAgain = () => {
     const itemsToAdd = order.serviceOrderDTOS.flatMap((serviceOrder) =>
@@ -40,29 +33,6 @@ export default function OrderCard({
     );
 
     addItemsToCart(itemsToAdd);
-  };
-
-  const handleShareWithCustomerService = () => {
-    sendMessage(
-      {
-        text: `Order #${order.orderNumber} details shared.`,
-        id: user!.id,
-        type: "order",
-        attachment: order.orderNumber,
-      },
-      {
-        onSuccess: () => {
-          toast.success(
-            t("Order details shared with customer service. Check your chat!")
-          );
-          pushNotificationToPortal({
-            title: `${user?.firstName} ${user?.lastName}`,
-            message: `Message: Order ${order.orderNumber} details shared.`,
-            type: "CHAT",
-          });
-        },
-      }
-    );
   };
 
   const status = statusMap[order.orderStatus];
@@ -105,15 +75,6 @@ export default function OrderCard({
                 onClick={handleBuyAgain}
               >
                 {t("Order Again")}
-              </Button>
-              <Button
-                variant="contained"
-                className="primary-button w-20!"
-                sx={{ textTransform: "none" }}
-                disabled={isPending}
-                onClick={handleShareWithCustomerService}
-              >
-                {t("Share")}
               </Button>
             </div>
           </div>
